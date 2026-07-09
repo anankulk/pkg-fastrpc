@@ -1,0 +1,36 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+name: AXIOM Coral Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: Packaging branch to build and expose to Coral/Axiom
+        type: choice
+        required: true
+        default: qcom/debian/trixie
+        options:
+          - qcom/debian/trixie
+          - qcom/debian/latest
+
+permissions:
+  contents: write
+  deployments: write
+  packages: read
+
+jobs:
+  debusine:
+    name: Debusine AXIOM (${{ inputs.target_branch }})
+    uses: qualcomm-linux/debusine-action/.github/workflows/debusine.yml@enable-axiom
+    with:
+      target_branch: ${{ inputs.target_branch }}
+      source_ref: refs/heads/${{ inputs.target_branch }}
+      release: false
+      debusine-action-ref: enable-axiom
+      debusine-parent-workspace: ${{ vars.DEBUSINE_PARENT_WORKSPACE || 'qli-ci' }}
+    secrets:
+      DEBUSINE_USER: ${{ secrets.DEBUSINE_USER }}
+      DEBUSINE_TOKEN: ${{ secrets.DEBUSINE_TOKEN }}
+      DEBUSINE_RELEASE_TOKEN: ${{ secrets.DEBUSINE_RELEASE_TOKEN }}
